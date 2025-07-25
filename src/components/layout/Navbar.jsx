@@ -2,6 +2,8 @@ import { Bars3Icon, BellIcon } from '@heroicons/react/24/outline'
 import { motion } from 'framer-motion'
 import { useState } from 'react'
 
+import Profile from "../../assets/images/WhatsApp Image 2025-07-25 at 19.47.26.jpeg"
+
 const Navbar = ({ sidebarOpen, setSidebarOpen }) => {
   const [isOpen, setIsOpen] = useState(false)
 
@@ -28,8 +30,10 @@ const Navbar = ({ sidebarOpen, setSidebarOpen }) => {
               onClick={() => setIsOpen(!isOpen)}
               className="flex items-center space-x-2 focus:outline-none"
             >
-              <div className="h-8 w-8 rounded-full bg-primary flex items-center justify-center text-white font-medium">JD</div>
-              <span className="hidden md:inline text-sm font-medium text-gray-700">John Doe</span>
+              <div className="rounded-full flex items-center justify-center text-white font-medium">
+                <img src={Profile} className=' rounded-full w-[40px] h-[40px]'  />
+              </div>
+              <span className="hidden md:inline text-sm font-medium text-gray-700">David Dolapo</span>
             </button>
 
             {isOpen && (

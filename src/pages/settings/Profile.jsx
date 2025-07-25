@@ -3,8 +3,8 @@ import { UserIcon, EnvelopeIcon, DevicePhoneMobileIcon, BuildingOfficeIcon, Glob
 
 const Profile = () => {
   const user = {
-    name: 'John Doe',
-    email: 'john.doe@example.com',
+    name: 'David Dolapo',
+    email: 'David.dolapo@example.com',
     phone: '+1 (555) 123-4567',
     company: 'Acme Inc',
     website: 'acme.example.com',
