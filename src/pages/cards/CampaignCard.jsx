@@ -5,8 +5,14 @@ import {
   DevicePhoneMobileIcon,
   ClockIcon,
   CalendarIcon,
-  ChartBarIcon
+  ChartBarIcon,
+  PauseIcon,
+  PlayIcon,
+  TrashIcon,
+  PencilIcon,
+  EyeIcon
 } from '@heroicons/react/24/outline'
+import { useState } from 'react'
 
 export const CampaignCard = ({ 
   id,
@@ -21,7 +27,11 @@ export const CampaignCard = ({
   sent,
   opened,
   clicked,
-  detailed = false 
+  detailed = false,
+  onEdit,
+  onDelete,
+  onStatusChange,
+  onViewDetails
 }) => {
   // Channel icons mapping
   const channelIcons = {
@@ -48,13 +58,69 @@ export const CampaignCard = ({
     'Paused': 'bg-red-500'
   }[status] || 'bg-primary'
 
+  // State for confirmation dialog
+  const [showConfirm, setShowConfirm] = useState(false)
+
+  // Handler functions
+  const handleEdit = () => {
+    if (onEdit) onEdit(id)
+  }
+
+  const handleDelete = () => {
+    setShowConfirm(true)
+  }
+
+  const confirmDelete = () => {
+    if (onDelete) onDelete(id)
+    setShowConfirm(false)
+  }
+
+  const toggleStatus = () => {
+    if (onStatusChange) {
+      const newStatus = status === 'Active' ? 'Paused' : 'Active'
+      onStatusChange(id, newStatus)
+    }
+  }
+
+  const handleViewDetails = () => {
+    if (onViewDetails) onViewDetails(id)
+  }
+
   return (
     <motion.div 
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       whileHover={{ scale: detailed ? 1 : 1.02 }}
-      className={`bg-white rounded-lg shadow ${detailed ? 'p-6' : 'p-4'}`}
+      className={`bg-white rounded-lg shadow ${detailed ? 'p-6' : 'p-4'} relative`}
     >
+      {/* Confirmation Dialog */}
+      {showConfirm && (
+        <motion.div 
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center rounded-lg"
+        >
+          <div className="bg-white p-4 rounded-lg shadow-lg max-w-sm">
+            <h3 className="font-medium text-lg mb-2">Delete Campaign</h3>
+            <p className="text-gray-600 mb-4">Are you sure you want to delete "{name}"? This action cannot be undone.</p>
+            <div className="flex justify-end space-x-3">
+              <button 
+                onClick={() => setShowConfirm(false)}
+                className="px-3 py-1 border rounded-md hover:bg-gray-50"
+              >
+                Cancel
+              </button>
+              <button 
+                onClick={confirmDelete}
+                className="px-3 py-1 bg-red-500 text-white rounded-md hover:bg-red-600"
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+        </motion.div>
+      )}
+
       <div className={`flex ${detailed ? 'flex-col md:flex-row md:items-start' : 'items-center justify-between'}`}>
         {/* Left section */}
         <div className={`flex ${detailed ? 'flex-col md:flex-1 mb-4 md:mb-0' : 'items-center space-x-4'}`}>
@@ -139,11 +205,51 @@ export const CampaignCard = ({
 
       {detailed && (
         <div className="flex justify-end mt-6 space-x-3">
-          <button className="px-4 py-2 border rounded-md text-sm font-medium hover:bg-gray-50">
+          <button 
+            onClick={handleViewDetails}
+            className="px-4 py-2 border rounded-md text-sm font-medium hover:bg-gray-50 flex items-center"
+          >
+            <EyeIcon className="h-4 w-4 mr-2" />
             View Details
           </button>
-          <button className="px-4 py-2 bg-primary text-white rounded-md text-sm font-medium hover:bg-primaryDark">
-            {status === 'Active' ? 'Manage' : 'Edit'}
+          
+          {status === 'Active' || status === 'Paused' ? (
+            <button 
+              onClick={toggleStatus}
+              className={`px-4 py-2 rounded-md text-sm font-medium flex items-center ${
+                status === 'Active' 
+                  ? 'bg-yellow-500 text-white hover:bg-yellow-600' 
+                  : 'bg-green-500 text-white hover:bg-green-600'
+              }`}
+            >
+              {status === 'Active' ? (
+                <>
+                  <PauseIcon className="h-4 w-4 mr-2" />
+                  Pause
+                </>
+              ) : (
+                <>
+                  <PlayIcon className="h-4 w-4 mr-2" />
+                  Resume
+                </>
+              )}
+            </button>
+          ) : null}
+
+          <button 
+            onClick={handleEdit}
+            className="px-4 py-2 bg-primary text-white rounded-md text-sm font-medium hover:bg-primaryDark flex items-center"
+          >
+            <PencilIcon className="h-4 w-4 mr-2" />
+            Edit
+          </button>
+
+          <button 
+            onClick={handleDelete}
+            className="px-4 py-2 bg-red-500 text-white rounded-md text-sm font-medium hover:bg-red-600 flex items-center"
+          >
+            <TrashIcon className="h-4 w-4 mr-2" />
+            Delete
           </button>
         </div>
       )}
